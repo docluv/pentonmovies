@@ -5,7 +5,6 @@
     overflow-scrolling: touch;
     overflow-style: none;
     -ms-scroll-chaining:none;
-    -ms-scroll-snap-type: proximity;
     -ms-scroll-translation: vertical-to-horizontal;
     overflow: auto;
     overflow-y: scroll;
@@ -34,13 +33,12 @@
     overflow-scrolling: touch;
     overflow-style: none;
     -ms-scroll-chaining:none;
-    -ms-scroll-snap-type: proximity;
     -ms-scroll-translation: vertical-to-horizontal;
     overflow: hidden;
     overflow-x: hidden;
     overflow-y: scroll;
     ms-touch-action: pan-x;
-
+    height:100%;
 }
 
 
