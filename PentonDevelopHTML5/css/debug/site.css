@@ -33,6 +33,7 @@ body {
 a, a:visited {
     color: #eee;
     text-decoration: none;
+    -ms-scroll-chaining: chained
 }
 
 h1, h2, h3 {

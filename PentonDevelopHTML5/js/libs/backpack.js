@@ -136,6 +136,8 @@
 
             return {
                 pageId: ve.id,
+                path: (ve.hasAttribute("data-path") ?
+                                ve.getAttribute("data-path") : ""),
                 viewTitle: (ve.hasAttribute("data-title") ?
                                 ve.getAttribute("data-title") :
                                 this.settings.defaultTitle),
@@ -189,13 +191,10 @@
 
         pageSettings: {
             pageId: "",
-            url: "",
+            path: "",
             css: undefined,
             js: undefined,
-            templates: "",
-            content: "",
-            defaultTemplate: "#DefaultViewTemplate"
-
+            content: ""
         }
 
     };
