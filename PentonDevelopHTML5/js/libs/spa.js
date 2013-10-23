@@ -11,6 +11,7 @@
 
         that.settings = $.extend({}, that.settings, customSettings);
 
+        that.appContext = that.settings.appContext || {};
         that.bp = that.settings.bp || backpack();
 
         that.titleElement = document.querySelector(that.settings.titleSelector);
@@ -46,6 +47,10 @@
         version: "0.0.4",
 
         bp: undefined,
+        appContext: undefined,
+
+        currentView: undefined,
+        newView: undefined,
 
         setupRoutes: function () {
 
@@ -201,6 +206,9 @@
             return "";
         },
 
+        currentUnLoad: undefined,
+        newUnLoad: undefined,
+
         swapView: function () {
 
             var that = this,
@@ -212,11 +220,16 @@
                 path = hashFragment.split(":")[0],
                 currentView = document.querySelectorAll("." + this.settings.currentClass);
 
+            that.currentView = currentView;
+
             if (currentView.length) {
+
+                var cv;
                 //adding this because I found myself sometimes tapping items to launch a new view before the animation was complete.
                 while (currentView.length > 1) {
-                    currentView[currentView.length - 1]
+                    cv = currentView[currentView.length - 1]
                             .parentNode.removeChild(currentView[currentView.length - 1]);
+                    cv = null;
                 }
 
             }
@@ -237,11 +250,13 @@
 
                 that.ensureViewAvailable(currentView, route.viewId);
 
-                newView = document.getElementById(route.viewId);
+                that.newView = newView = document.getElementById(route.viewId);
 
                 if (newView) {
 
                     if (currentView) {
+
+                        that.currentUnLoad = that.newUnLoad;
 
                         if (that.hasAnimations() && anim) {
 
@@ -272,6 +287,12 @@
                         that.makeCallback(route);
                     }
 
+                    that.currenUnLoad = undefined;
+
+                    if (route.unload) {
+                        that.newUnLoad = that.getCallbackMethod(route.unload);
+                    }
+
                 }
 
             } else if (hasEscapeFragment === "") { //Goto 404 handler
@@ -299,31 +320,38 @@
             var that = this,
                 anim = that.animation;
 
-            if (currentView.classList) {
+            //            if (currentView.classList) {
 
-                currentView.classList.remove(that.settings.currentClass);
-                currentView.classList.remove(anim);
-                currentView.classList.remove("out");
+            $.removeClass(currentView, that.settings.currentClass);
+            $.removeClass(currentView, anim);
+            $.removeClass(currentView, "out");
 
-                newView.classList.remove(anim);
-                newView.classList.remove("in");
+            $.removeClass(newView, anim);
+            $.removeClass(newView, "in");
 
-            } else {
+            //} else {
 
-                currentView.className.replace(that.settings.currentClass, " ");
-                currentView.className.replace(anim, " ");
-                currentView.className.replace("out", " ");
+            //    currentView.className.replace(that.settings.currentClass, " ");
+            //    currentView.className.replace(anim, " ");
+            //    currentView.className.replace("out", " ");
 
-                newView.className.replace(anim, " ");
-                newView.className.replace("in", " ");
+            //    newView.className.replace(anim, " ");
+            //    newView.className.replace("in", " ");
 
-            }
+            //}
 
             if (currentView && bp && currentView.parentNode) {
 
                 currentView.parentNode.removeChild(currentView);
 
             }
+
+            if (that.currentUnLoad && that.currentUnLoad.callback) {
+                that.currentUnLoad.callback.call(that.appContext);
+            }
+
+            that.currentView = currentView = undefined;
+            that.newView = newView = undefined;
 
         },
 
@@ -348,16 +376,11 @@
 
         },
 
-        makeCallback: function (route) {
+        getCallbackMethod: function (name) {
 
             var a, that,
-                callback = route.callback,
-            //    unload = route.unload,
-                cbPaths = callback.split(".");
-
-            if (!callback) {
-                return;
-            }
+                callback = undefined,
+                cbPaths = name.split(".");
 
             callback = window[cbPaths[0]];
 
@@ -368,6 +391,22 @@
                 }
 
                 callback = callback[cbPaths[a]];
+            }
+
+            return {
+                that: that,
+                callback: callback
+            };
+        },
+
+        makeCallback: function (route) {
+
+            var cb = this.getCallbackMethod(route.callback),
+                callback = cb.callback,
+                that = cb.that;
+
+            if (!callback) {
+                return;
             }
 
             route.paramValues = route.paramValues || {};
@@ -413,6 +452,14 @@
 
         hasAnimations: function () {
 
+            if (document.body.hasAttribute("data-hasAnimations")) {
+                if (document.body.getAttribute("data-hasAnimations") === "true") {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+
             var animation = false,
                 elm = document.createElement("div"),
                 animationstring = 'animation',
@@ -434,6 +481,8 @@
                 }
             }
 
+            document.body.setAttribute("data-hasAnimations", animation);
+
             return animation;
 
         },
@@ -447,6 +496,7 @@
 
         settings: {
             routes: [],
+            appContext: undefined,
             viewSelector: ".content-pane",
             currentClass: "current",
             mainWrappperSelector: "#main",

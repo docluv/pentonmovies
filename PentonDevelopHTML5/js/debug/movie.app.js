@@ -14,23 +14,60 @@
             url: "#!"
         },
         {
-            title: "in theaters",
-            iconClass: "in-theaters-icon",
-            url: "#!movies/InTheaters"
+            title: "map",
+            iconClass: "maps-icon",
+            url: "#!maps"
         }
         , {
-            title: "opening",
-            iconClass: "opening-icon",
-            url: "#!movies/Opening"
+            title: "showtimes",
+            iconClass: "theaters-icon",
+            url: "#!showtimes"
         }
         , {
-            title: "coming soon",
-            iconClass: "coming-soon-icon",
-            url: "#!movies/CommingSoon"
+            title: "search",
+            iconClass: "search-icon",
+            url: "#!search"
         }],
-        subMenu: []
+        subMenu: [
+            {
+                title: "news",
+                icon: undefined,
+                iconClass: "go-news",
+                url: "#!news"
+            }
+
+             , {
+                 title: "opening this week",
+                 icon: undefined,
+                 iconClass: "go-opening",
+                 url: "#!movies/Opening"
+             }
+             , {
+                 title: "in theaters",
+                 icon: undefined,
+                 iconClass: "go-in-theaters",
+                 url: "#!movies/InTheaters"
+             }
+             , {
+                 title: "top box office",
+                 icon: undefined,
+                 iconClass: "go-top-box-office",
+                 url: "#!movies/TopBoxOffice"
+             }
+            , {
+                title: "comming soon",
+                icon: undefined,
+                iconClass: "go-movie-soon",
+                url: "#!movies/CommingSoon"
+            }
+            , {
+                title: "account",
+                icon: undefined,
+                iconClass: "go-account",
+                url: "#!account"
+            }]
     };
-    
+
     var movieApp = function (customSettings) {
 
         var that = new movieApp.fn.init(customSettings);
@@ -62,11 +99,13 @@
 
         window.addEventListener("resize", function (e) {
 
-            for (var key in that.resizeEvents) {
-                if (that.resizeEvents.hasOwnProperty(key)) {
-                    that.resizeEvents[key].call(that);
+            requestAnimationFrame(function () {
+                for (var key in that.resizeEvents) {
+                    if (that.resizeEvents.hasOwnProperty(key)) {
+                        that.resizeEvents[key].call(that);
+                    }
                 }
-            }
+            });
 
         });
 
@@ -88,7 +127,7 @@
 
         bp: undefined,
         data: undefined,
-        tmpl: undefined, 
+        tmpl: undefined,
 
         mainTitle: document.querySelector(".view-title"),
 
@@ -159,15 +198,19 @@
                 return;
             }
 
-            var t = document.querySelector(targetSelector);
+            var that = this,
+                t = document.querySelector(targetSelector);
 
             //verify it is a single node.
             if (t.length && t.length > 0) {
                 t = t[0];
             }
 
-            if (this.templates[templateName]) {
-                t.innerHTML = this.templates[templateName](data);
+            if (that.templates[templateName]) {
+                requestAnimationFrame(function () {
+                    t.innerHTML = that.templates[templateName](data);
+                });
+                //t.innerHTML = that.templates[templateName](data);
             }
 
         },
@@ -214,17 +257,15 @@
 
             target = target || ".panorama-container";
             settings = $.extend({
-                                maxHeight: Number.MAX_VALUE,
-                                maxWidth: Number.MAX_VALUE
-                            }, settings);
+                maxHeight: Number.MAX_VALUE,
+                maxWidth: Number.MAX_VALUE
+            }, settings);
 
-            var that = this,
+            var that = this, dt,
                 pCont = document.querySelector(target);
 
-            if (/*(*/settings.maxWidth /*&& settings.maxHeight)*/ &&
-                /*(*/settings.maxWidth >= window.innerWidth /*||
-                    settings.maxHeight >= window.innerHeight) ||
-                (!settings.maxWidth && !settings.maxHeight)*/) {
+            if (settings.maxWidth &&
+                settings.maxWidth >= window.innerWidth) {
 
                 that.panorama = panorama(pCont,
                                     $.extend(settings, {
@@ -243,32 +284,35 @@
                                         }
                                     }));
 
-
-                var dt = deeptissue(pCont,
-                            {
-                                swipeRightThreshold: 35,
-                                swipeLeftThreshold: -35,
-                                swipeUpThreshold: 35,
-                                swipeDownThreshold: 35
-                            });
-
-                dt.swipeRight(function (evt, m, translate) {
-
-                    if (settings.maxWidth >= window.innerWidth /*||
-                        settings.maxHeight >= window.innerHeight*/) {
-                        that.panorama.moveRight(evt);
-                    }
-                    
-                })
-
-                .swipeLeft(function (evt, m, translate) {
-
-                    if (settings.maxWidth >= window.innerWidth /*||
-                        settings.maxHeight >= window.innerHeight*/) {
-                        that.panorama.moveLeft(evt);
-                    }
-                    
-                });
+                //that.panoramaDt = 
+                /*
+                                dt = deeptissue(pCont,
+                                            {
+                                                swipeRightThreshold: 35,
+                                                swipeLeftThreshold: -35,
+                                                swipeUpThreshold: 35,
+                                                swipeDownThreshold: 35
+                                            });
+                
+                                dt.swipeRight(function (evt, m, translate) {
+                
+                                    if (settings.maxWidth >= window.innerWidth ) {
+                                        that.panorama.moveRight(evt);
+                                    }
+                
+                                })
+                
+                                .swipeLeft(function (evt, m, translate) {
+                
+                                    if (settings.maxWidth >= window.innerWidth ) {
+                                        that.panorama.moveLeft(evt);
+                                    }
+                
+                                });
+                                */
+                //pCont.addEventListener("MSManipulationStateChanged", function (e) {
+                //    console.log(e.currentState);
+                //});
 
             }
 
@@ -304,6 +348,8 @@
             }
 
         },
+
+        panoramaDt: undefined,
 
         setPanoramaWings: function () {
 

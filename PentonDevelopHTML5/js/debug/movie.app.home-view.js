@@ -56,17 +56,10 @@
 
         });
 
-    //    that.setPanoramaWidth();
+        that.setPanoramaWidth();
 
         var i = 0,
             vPanels = document.querySelectorAll(".panel-v-scroll");
-
-        //for (; i < vPanels.length; i++) {
-        //    //vPanels[i].style.position = "absolute";
-        //    //vPanels[i].style.top = "100px";
-        //    //vPanels[i].style.bottom = "35px";
-        //    vPanels[i].style.height = "390px";
-        //}
 
         that.resizeEvents["manageHomeView"] = that.setPanoramaWidth;
 

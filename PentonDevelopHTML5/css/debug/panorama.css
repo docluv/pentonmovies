@@ -55,14 +55,14 @@
     opacity: 0.9;
 }
 
-.pxs_navigation span.pxs_prev {
+/*.pxs_navigation span.pxs_prev {
     background: #000 url(../../../img/prev.png) no-repeat center center;
 }
 
 .pxs_navigation span.pxs_next {
     background: #000 url(../../../img/next.png) no-repeat center center;
     right: 0;
-}
+}*/
 
 
 /* End Panorama Styles */
