@@ -85,7 +85,7 @@
 
         @if (!Html.HasEscapeFragment())
         {
-            long lastLoad = Html.SetUpdateCookie("dt", 1, 360);
+            long lastLoad = Html.LastUpdated();
             
             @RenderPage(lastLoad, "home-view.cshtml")
             @RenderPage(lastLoad, "movies-view.cshtml")
